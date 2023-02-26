@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, Post, Body } from '@nestjs/common';
 
 @Controller('products')
 export class ProductsController {
@@ -17,7 +17,15 @@ export class ProductsController {
 	}
 
 	@Get(':productId')
-	getProduct(@Param('productId') productId: string) {
+	getOne(@Param('productId') productId: string) {
 		return `product ${productId}`;
+	}
+
+	@Post('product')
+	createProducto(@Body() body: any): any {
+		return {
+			name: body.name,
+			price: body.price,
+		};
 	}
 }
