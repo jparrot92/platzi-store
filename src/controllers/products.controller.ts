@@ -1,8 +1,8 @@
 import {
 	Controller,
 	Get,
-	Param,
 	Query,
+	Param,
 	Post,
 	Body,
 	Put,
@@ -14,15 +14,22 @@ import {
 
 import { Response } from 'express';
 
+import { ProductsService } from './../services/products.service';
+
 @Controller('products')
 export class ProductsController {
+	constructor(private productsService: ProductsService) {}
+
 	@Get()
 	getProducts(
 		@Query('limit') limit = 100,
 		@Query('offset') offset = 0,
 		@Query('brand') brand: string,
 	) {
-		return `products limit=> ${limit} offset=> ${offset} brand=> ${brand}`;
+		// return {
+		//   message: `products limit=> ${limit} offset=> ${offset} brand=> ${brand}`,
+		// };
+		return this.productsService.findAll();
 	}
 
 	@Get('filter')
@@ -32,38 +39,29 @@ export class ProductsController {
 
 	@Get(':productId')
 	@HttpCode(HttpStatus.ACCEPTED)
-	getOne(@Res() response: Response, @Param('productId') productId: string) {
-		response.status(200).send({
-			message: `product ${productId}`,
-		});
+	getOne(@Param('productId') productId: string) {
+		// response.status(200).send({
+		//   message: `product ${productId}`,
+		// });
+		return this.productsService.findOne(+productId);
 	}
 
-	@Post('product')
-	createProducto(@Body() body: any): any {
-		return {
-			name: body.name,
-			price: body.price,
-		};
+	@Post()
+	create(@Body() payload: any) {
+		// return {
+		//   message: 'accion de crear',
+		//   payload,
+		// };
+		return this.productsService.create(payload);
 	}
 
-	@Put('product/:idProduct')
-	updateProducto(
-		@Param('idProduct') idProduct: string,
-		@Body() body: any,
-	): any {
-		return {
-			idProduct: idProduct,
-			name: body.newName,
-			price: body.newPrice,
-		};
+	@Put(':id')
+	update(@Param('id') id: string, @Body() payload: any) {
+		return this.productsService.update(+id, payload);
 	}
 
-	@Delete('product')
-	deleteProducto(@Param('idProduct') idProduct: string): any {
-		return {
-			idProduct: idProduct,
-			delete: true,
-			count: 1,
-		};
+	@Delete(':id')
+	delete(@Param('id') id: number) {
+		return id;
 	}
 }
